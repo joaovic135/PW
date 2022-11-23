@@ -1,0 +1,40 @@
+h1{
+
+    padding: 2ch;
+
+}
+h3{
+    font-family:  Times, serif;
+    font-style: normal;
+    margin: 2ch;
+}
+.back{
+    position:absolute;
+    background-color: aqua;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+}
+.image{
+    position: absolute;
+    background-image: url(./public/Castlevania-Netflix-TV-video-games-castle-Castlevania-anime-1387505-wallhere.com.jpg);
+    left:100px;
+    right: 100px;
+    top:0;
+    bottom: 0;
+}
+.div1{
+    position: absolute;
+    margin: 100px;
+    right: 60%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-color: #A07D61;
+    border-style: solid;
+    border-width: 12px;
+    border-top-right-radius: 1cm;
+    border-top-left-radius: 1cm;
+    border-bottom-left-radius: 1cm;
+    border-bottom-right-radius: 1cm;
+    box-shadow: 4px 4px 10px 2px gray;
+}
