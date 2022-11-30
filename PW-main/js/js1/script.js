@@ -12,6 +12,7 @@ for (let a = 1; a <= 10; a++) {
       <th colspan=3>Produto de ${a}</th>
     </tr>`)
     for (let index = 0; index < 10; index++) {
+        c = a * b;
         document.write(`
         <tr>
           <td>${a} x ${b}</td>
@@ -21,7 +22,8 @@ for (let a = 1; a <= 10; a++) {
         `);
 
         b = b + 1;
-        c = a * b;
+        
+      
     }
     b=1;
     c = a * b;
