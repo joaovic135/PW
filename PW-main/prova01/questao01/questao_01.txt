@@ -1,0 +1,4 @@
+linha 15 não contem a tag body
+linha 18 a tag <strong> é aberta e nunca fechada. 
+linha 24 - 33 é usado a tag <style> ao inves de <script>
+linha 29 - é usado that ao inves de this. 
