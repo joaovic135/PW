@@ -1,0 +1,17 @@
+hoisting é uma utlidade da linguagem Java Script que tem como 
+função interpretar o codigo de forma diferente da que foi escrita. 
+exemplo 
+
+
+function (){
+    console.log(a)
+
+    const a = 1  
+}
+
+o interpretador ira ler como 
+
+function (){
+    const a = 1 
+    console.log(a)
+}
