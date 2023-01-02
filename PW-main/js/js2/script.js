@@ -35,7 +35,7 @@ function main() {
 
     while (!perdeu) {
         jogador = parseInt(prompt());
-
+""
         rodada = Math.floor((Math.random() * 3) + 1);
 
         if (entrada(jogador) === "Invalido") {
