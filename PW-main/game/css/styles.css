@@ -1,0 +1,34 @@
+#space{
+  border: 1px solid black;
+  background-image: url("../assets/Background/starBackground.png");
+  position: relative;
+  overflow: hidden;
+}
+
+#ship{
+  position: absolute;
+}
+
+.pontos{
+  position: absolute;
+  color: white;
+  font-size: 35px;
+  margin: 0;
+
+}
+.enemy-ship{
+  position: absolute;
+
+}
+
+.life{
+  position: absolute;
+}
+
+.shot{
+  position: absolute;
+}
+
+.destroy{
+  position: absolute;
+}
