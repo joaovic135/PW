@@ -14,11 +14,34 @@
   color: white;
   font-size: 35px;
   margin: 0;
-
 }
+
+.textoMorte{
+  position: absolute;
+  align-self: center;
+  color: red;
+  font-size: 40px;
+}
+
+.botao{
+  position: absolute;
+  align-self: center;
+}
+
 .enemy-ship{
   position: absolute;
+}
 
+.ufo{
+  position: absolute;
+}
+
+.asteroid-G{
+  position: absolute;
+}
+
+.asteroid-P{
+  position: absolute;
 }
 
 .life{
