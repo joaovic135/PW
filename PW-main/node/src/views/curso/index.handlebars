@@ -1,0 +1,22 @@
+<h1>Listagem de Cursos</h1>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Sigla</th>
+      <th scope="col">Nome</th>
+      <th scope="col">Área</th>
+      <th scope="col" class="opcoes">Opções</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    {{#each cursos}}
+    <tr class="table-primary">
+      <td>{{sigla}}</td>
+      <td>{{nome}}</td>
+      <td>{{areaId}}</td>
+      <td><a href="/curso/{{id}}"><i class="fa-solid fa-eye"></i></a></td>
+    </tr>
+    {{/each}}    
+  </tbody>
+</table>

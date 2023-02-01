@@ -2,16 +2,18 @@
 
   const TAMX = 600;
   const TAMY = 800;
-  const FPS = 200;
+  const FPS = 100;
 
   var speed = 1
-  var x =0
+  var h = 0
+  var x = 0
   var j = 0
   var i = 0
   var m = 0;
   var od = 0
   var Pause = true;
   var Morreu = false;
+  var telaMorte = false;
   var Lposi = 450;
   var VidasLeft = 3;
   var Pontuacao = 0;
@@ -19,20 +21,21 @@
   var y = 0;
   var k = 0;
 
-  const PROB_ENEMY_SHIP = 0.5
-  const PROB_ASTEROID_BIG = 0.5
-  const PROB_ASTEROID_SMALL = 0.5
-  const PROB_DISCO_VOADOR = 0.5
+  const PROB_ENEMY_SHIP = 0.3
+  const PROB_ASTEROID_BIG = 0.2
+  const PROB_ENEMY_SHOT = 0.9
+  const PROB_ASTEROID_SMALL = 0.3
+  const PROB_DISCO_VOADOR = 0.1
 
 
-  let space, ship , ponto;
+  let space, ship, ponto;
 
   let discoVoador = [];
   let asteroidSmall = [];
   let asteroidBig = [];
   let enemies = [];
   let tiros = [];
-
+  let enemiesShot = [];
 
   let vidas = [3];
 
@@ -43,62 +46,66 @@
     space = new Space();
     ship = new Ship();
 
+    telaMorte = false;
+
     for (j = 0; j < 3; j++) {
-      vidas[j+1] = new Life(j,Lposi)
-      console.log(vidas[j+1].element)
+      vidas[j + 1] = new Life(j, Lposi)
+      console.log(vidas[j + 1].element)
       Lposi -= 50;
     }
-    j=0
+    j = 0
     Lposi = 450;
 
     ponto = new Pontos();
 
-    if(Morreu == true){
+    if (Morreu == true) {
       Morreu = false
       clearInterval(interval)
-      
-      const interval = window.setInterval(run, 1000/FPS);
-      
+
+      const interval = window.setInterval(run, 1000 / FPS);
+
     }
-    const interval = window.setInterval(run, 1000/FPS);
+    const interval = window.setInterval(run, 1000 / FPS);
 
   }
 
-  
-
-  // Pausar e continuar o jogo
+    // Pausar e continuar o jogo
   window.addEventListener("keydown", (e) => {
-    if (e.code === "KeyP") {
-      if (Pause == false) {
-        Pause = true
-      } else {
+    if(telaMorte != true){  
+      if (e.code === "KeyP") {
+        if (Pause == false) {
+          Pause = true
+        } else {
+          Pause = false
+        }
+      }
+
+      if (e.code == "Space") {
         Pause = false
       }
     }
-
-    if (e.code == "Space") {
-      Pause = false
-    }
   })
-
 
   // Movimentação da nave
   window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft"){ 
-      ship.mudaDirecao(-1);
-    
-    }else if (e.key === "ArrowRight") ship.mudaDirecao(+1);
+    if(telaMorte != true){  
+      if (e.key === "ArrowLeft") {
+        ship.mudaDirecao(-1);
+
+      } else if (e.key === "ArrowRight") ship.mudaDirecao(+1);
+    }
   })
 
   //tiro da nave
   window.addEventListener("keydown", (e) => {
-    if (e.code == "Space") {
-     
-      tiros.push(new Shot(od));
-      od++;
+    if(telaMorte != true){  
+      if (e.code == "Space") {
 
+        tiros.push(new Shot(od));
+        od++;
+
+      }
     }
-
   })
 
   //Background do espaço
@@ -116,8 +123,9 @@
     }
   }
 
-  class Pontos{
-    constructor(){
+  //Pontos do jogador 
+  class Pontos {
+    constructor() {
       this.element = document.createElement("p");
       this.element.innerHTML = String(Pontuacao).padStart(6, '0');
       this.element.className = "pontos";
@@ -127,13 +135,14 @@
     }
   }
 
-  class TextoMorte{
-    constructor(){
+  //Texto de Game over
+  class TextoMorte {
+    constructor() {
       this.element = document.createElement("p");
       this.element.innerHTML = "Game Over";
       this.element.className = "textoMorte";
       this.element.style.left = `214px`
-      this.element.style.top = `${parseInt(TAMY / 2) -50}px`
+      this.element.style.top = `${parseInt(TAMY / 2) - 50}px`
       space.element.appendChild(this.element)
     }
   }
@@ -162,10 +171,10 @@
     move() {
       if (this.direcao === 0)
         if (parseInt(this.element.style.left) > 0)
-          this.element.style.left = `${parseInt(this.element.style.left) - 1}px`
+          this.element.style.left = `${parseInt(this.element.style.left) - 2 }px`
       if (this.direcao === 2)
         if (parseInt(this.element.style.left) < TAMX - 100)
-          this.element.style.left = `${parseInt(this.element.style.left) + 1}px`
+          this.element.style.left = `${parseInt(this.element.style.left) + 2}px`
 
       space.move();
 
@@ -174,7 +183,7 @@
 
   //Vida do jogador
   class Life {
-    constructor(id,Lposi) {
+    constructor(id, Lposi) {
       this.element = document.createElement("img");
       this.element.id = id
       this.element.className = "life";
@@ -215,12 +224,26 @@
 
     }
     move(speed) {
-      this.element.style.top = `${parseInt(this.element.style.top) + 1+speed}px`;
+      this.element.style.top = `${parseInt(this.element.style.top) + 1 + speed}px`;
+    }
+  }
+
+  class EnemyShot {
+    constructor(e){
+      this.element = document.createElement("img");
+      this.element.className = "enemy-shot";
+      this.element.src = "assets/laserGreen.png";
+      this.element.style.top = `${parseInt(e.element.style.top) + 48}px`;
+      this.element.style.left = `${parseInt(e.element.style.left) + 48}px`;
+      space.element.appendChild(this.element);
+    }
+    move(speed) {
+      this.element.style.top = `${parseInt(this.element.style.top) + 2 + speed}px`;
     }
   }
 
   //Disco voador
-  class UFO{
+  class UFO {
     constructor(id) {
       this.element = document.createElement("img");
       this.element.id = id
@@ -232,7 +255,7 @@
 
     }
     move(speed) {
-      this.element.style.top = `${parseInt(this.element.style.top) + 1+speed}px`;
+      this.element.style.top = `${parseInt(this.element.style.top) + 1 + speed}px`;
     }
   }
 
@@ -249,10 +272,10 @@
 
     }
     move(speed) {
-      this.element.style.top = `${parseInt(this.element.style.top) + 1+speed}px`;
+      this.element.style.top = `${parseInt(this.element.style.top) + 1 + speed}px`;
     }
   }
-  
+
   //Asteroid pequeno
   class AsteroidP {
     constructor(id) {
@@ -266,36 +289,37 @@
 
     }
     move(speed) {
-      this.element.style.top = `${parseInt(this.element.style.top) + 1+speed}px`;
+      this.element.style.top = `${parseInt(this.element.style.top) + 1 + speed}px`;
     }
   }
 
   //Imagem de nave inimiga destruida
-  class Destruido{
-    constructor(id , a , e){
+  class Destruido {
+    constructor(id, a, e) {
       this.element = document.createElement("img");
       this.element.id = id;
       this.element.className = "destroy";
       this.element.src = "assets/laserRedShot.png";
 
-      this.element.style.top= e[a].element.style.top;
+      this.element.style.top = e[a].element.style.top;
 
-      if(e[a].element.className == "asteroid-G"){
-        this.element.style.left= `${parseInt(e[a].element.style.left) + 50}px`
-      }else{
-        this.element.style.left= e[a].element.style.left;
+      if (e[a].element.className == "asteroid-G") {
+        this.element.style.left = `${parseInt(e[a].element.style.left) + 50}px`
+      } else {
+        this.element.style.left = e[a].element.style.left;
       }
       space.element.appendChild(this.element);
     }
   }
 
-  class Botao{
-    constructor(){
+  //Botao de recomeçar
+  class Botao {
+    constructor() {
       this.element = document.createElement("button");
       this.element.id = "press me"
-      this.element.innerText = "TEEEEESSSSTTTEEEE";
+      this.element.innerText = "TENTAR NOVAMENTE";
       this.element.className = "botao"
-      this.element.style.top = `${parseInt(TAMY / 2) +50 }px`
+      this.element.style.top = `${parseInt(TAMY / 2) + 50}px`
       this.element.style.left = "226px"
       space.element.appendChild(this.element);
 
@@ -323,7 +347,7 @@
           }
         }
       }
-
+      
       // --------- NAVES INIMIGAS --------- 
 
       //Surgimento de naves inimigas 
@@ -335,6 +359,93 @@
 
       //Movimento da nave inimiga 
       enemies.forEach((e) => e.move(speed));
+      
+      //Nave inimiga atirando
+      const random_enemy_shot = Math.random()*100;
+      for (let k = enemies.length - 1; k >= 0; k--) {
+        if (enemies[k] != undefined) {
+          if (space.element.contains(enemies[k].element)) {
+            if(random_enemy_shot <= PROB_ENEMY_SHOT){
+              enemiesShot.push(new EnemyShot(enemies[k]));
+              const interval2 = window.setInterval(function(){
+                if(Pause == false){
+                  console.log("tiro")
+                  enemiesShot.push(new EnemyShot(enemies[k]))
+                }
+              },8000)
+            } 
+          }
+        }
+      }
+      
+      //Movimento do tiro da nave inimiga 
+      enemiesShot.forEach((e) => e.move(speed));
+
+      //Removendo tiros inimigos fora da tela 
+      for(let i = enemiesShot.length - 1; i>= 0 ; i--){
+        if (enemiesShot[i] != undefined) {
+          if (parseInt(enemiesShot[i].element.style.top) >= TAMY) {
+            if (space.element.contains(enemiesShot[i].element)) {
+              space.element.removeChild(enemiesShot[i].element)
+            }
+          }
+        }
+      }
+
+      //Tiro inimigo encostou no jogador
+      for(let i = enemiesShot.length -1 ; i>=0; i--){
+        if(enemiesShot[i] != undefined){
+          if(parseInt(enemiesShot[i].element.style.left) > (parseInt(ship.element.style.left))){
+            if(parseInt(enemiesShot[i].element.style.left) < (parseInt(ship.element.style.left)+92)){
+
+              if(parseInt(enemiesShot[i].element.style.top) <= parseInt(ship.element.style.top) + 45 && parseInt(enemiesShot[i].element.style.top) >= parseInt(ship.element.style.top)){
+                if (space.element.contains(enemiesShot[i].element)){
+                  
+                  if (space.element.contains(vidas[VidasLeft].element)) {
+                    console.log(VidasLeft)
+                    space.element.removeChild(vidas[VidasLeft].element)
+                  }
+
+                  VidasLeft -= 1
+                  console.log("atingiu Tiro")
+                  ship.element.src = "assets/playerDamaged.png";
+                  console.log(enemiesShot[i])
+                  destruido.push(new Destruido(x, i, enemiesShot));
+
+                  space.element.removeChild(enemiesShot[i].element)
+                
+                  //Imagem de nave destruida
+                  if (destruido[x] != undefined) {
+                    if (space.element.contains(destruido[x].element)) {
+                      (function (x) {
+                        setTimeout(function () {
+                          if (destruido[x] != undefined)
+                            if (space.element.contains(destruido[x].element))
+                              space.element.removeChild(destruido[x].element)
+                        }, 200);
+                      })(x);
+                    }
+                  }
+                  // mudar a imagem para danificada e chamar set timeout com 5 segundos para mudar a imagem de volta para a normal 
+                  (function (ship) {
+                    setTimeout(function () {
+                      ship.element.src = "assets/player.png"
+                    }, 5000);
+                  })(ship);
+
+                  if (VidasLeft == 0) {
+                    Morreu = true
+                    m = 0
+                    console.log("Morreu")
+                  }
+
+                  x += 1
+                }
+              }
+            }
+          }
+        }
+      }
 
       // Removendo naves inimigas fora da tela
       for (let i = enemies.length - 1; i >= 0; i--) {
@@ -343,62 +454,61 @@
             if (space.element.contains(enemies[i].element)) {
               space.element.removeChild(enemies[i].element)
             }
-            //
           }
         }
       }
 
       // Nave inimiga encostou no jogador
-      for(let e = enemies.length - 1 ; e >=0 ; e--){
+      for (let e = enemies.length - 1; e >= 0; e--) {
         if (parseInt(enemies[e].element.style.left) + 98 > parseInt(ship.element.style.left)) {
           if (parseInt(enemies[e].element.style.left) < (parseInt(ship.element.style.left) + 98)) {
             if (parseInt(enemies[e].element.style.top) == parseInt(ship.element.style.top)) {
-              if(space.element.contains(enemies[e].element)){
-                
-                if(space.element.contains(vidas[VidasLeft].element)){
+              if (space.element.contains(enemies[e].element)) {
+
+                if (space.element.contains(vidas[VidasLeft].element)) {
                   console.log(VidasLeft)
                   console.log(vidas[VidasLeft].element)
                   space.element.removeChild(vidas[VidasLeft].element)
-                  
+
                 }
-                
+
                 VidasLeft -= 1
                 console.log("atingiu")
                 ship.element.src = "assets/playerDamaged.png";
                 console.log(enemies[e])
-                destruido.push(new Destruido(x,e,enemies));
+                destruido.push(new Destruido(x, e, enemies));
 
                 space.element.removeChild(enemies[e].element)
-               
-               
+
+
                 //Imagem de nave destruida
                 if (destruido[x] != undefined) {
-                  if(space.element.contains(destruido[x].element)){
-                    (function(x) {
-                      setTimeout(function() {      
-                        if (destruido[x] != undefined)  
-                          if(space.element.contains(destruido[x].element))     
+                  if (space.element.contains(destruido[x].element)) {
+                    (function (x) {
+                      setTimeout(function () {
+                        if (destruido[x] != undefined)
+                          if (space.element.contains(destruido[x].element))
                             space.element.removeChild(destruido[x].element)
                       }, 200);
-                  })(x);
+                    })(x);
                   }
                 }
-                
+
                 // mudar a imagem para danificada e chamar set timeout com 5 segundos para mudar a imagem de volta para a normal 
-                (function(ship) {
-                  setTimeout(function() {      
+                (function (ship) {
+                  setTimeout(function () {
                     ship.element.src = "assets/player.png"
                   }, 5000);
                 })(ship);
-              
+
 
                 if (VidasLeft == 0) {
                   Morreu = true
-                  m = 0 
+                  m = 0
                   console.log("Morreu")
                 }
 
-                x+=1
+                x += 1
               }
             }
           }
@@ -413,32 +523,32 @@
             if (parseInt(tiros[i].element.style.left) > (parseInt(enemies[o].element.style.left))) {
               if (parseInt(tiros[i].element.style.left) < (parseInt(enemies[o].element.style.left) + 92)) {
 
-                if (parseInt(tiros[i].element.style.top) <= parseInt(enemies[o].element.style.top) + 45 && parseInt(tiros[i].element.style.top) >= parseInt(enemies[o].element.style.top) ){
+                if (parseInt(tiros[i].element.style.top) <= parseInt(enemies[o].element.style.top) + 45 && parseInt(tiros[i].element.style.top) >= parseInt(enemies[o].element.style.top)) {
                   if (space.element.contains(tiros[i].element)) {
                     if (space.element.contains(enemies[o].element)) {
 
-                      destruido.push(new Destruido(x,o,enemies));
-                      
+                      destruido.push(new Destruido(x, o, enemies));
+
                       space.element.removeChild(tiros[i].element)
                       space.element.removeChild(enemies[o].element)
-                      
+
                       if (destruido[x] != undefined) {
                         console.log("teste")
-                        if(space.element.contains(destruido[x].element)){
+                        if (space.element.contains(destruido[x].element)) {
                           Pontuacao = parseInt(Pontuacao) + 50
-                          ponto.element.innerHTML =  String(Pontuacao).padStart(6, '0');
-                    
-                          (function(x) {
-                              setTimeout(function() {      
-                                if (destruido[x] != undefined)  
-                                  if(space.element.contains(destruido[x].element))     
-                                    space.element.removeChild(destruido[x].element)
-                              }, 200);
+                          ponto.element.innerHTML = String(Pontuacao).padStart(6, '0');
+
+                          (function (x) {
+                            setTimeout(function () {
+                              if (destruido[x] != undefined)
+                                if (space.element.contains(destruido[x].element))
+                                  space.element.removeChild(destruido[x].element)
+                            }, 200);
                           })(x);
                         }
                       }
                       x++;
-                      
+
                     }
                   }
                 }
@@ -448,6 +558,7 @@
         }
       }
 
+      
       // --------- ASTEROIDE GRANDE ---------
 
       //Surgimento de asteroides grandes
@@ -461,10 +572,10 @@
       asteroidBig.forEach((e) => e.move(speed));
 
       // Removendo asteroides grandes fora da tela
-      for( let i = asteroidBig.length - 1; i >= 0 ; i--){
-        if(asteroidBig[i] != undefined){
-          if(parseInt(asteroidBig[i].element.style.top) >= TAMY){
-            if(space.element.contains(asteroidBig[i].element)){
+      for (let i = asteroidBig.length - 1; i >= 0; i--) {
+        if (asteroidBig[i] != undefined) {
+          if (parseInt(asteroidBig[i].element.style.top) >= TAMY) {
+            if (space.element.contains(asteroidBig[i].element)) {
               space.element.removeChild(asteroidBig[i].element)
             }
           }
@@ -472,28 +583,28 @@
       }
 
       //Tiro encostou em asteroid grande
-      for( let i = tiros.length - 1; i >= 0 ; i--){
-        for(let o = asteroidBig.length -1 ; o >= 0 ; o--){
-          if(asteroidBig[o]!= undefined){
-            if (parseInt(tiros[i].element.style.left) > (parseInt(asteroidBig[o].element.style.left))){
-              if (parseInt(tiros[i].element.style.left) < (parseInt(asteroidBig[o].element.style.left) + 136)){
-                if (parseInt(tiros[i].element.style.top) <= parseInt(asteroidBig[o].element.style.top) + 100 && parseInt(tiros[i].element.style.top) >= parseInt(asteroidBig[o].element.style.top) ){
-                  if(space.element.contains(tiros[i].element)){
-                    if(space.element.contains(asteroidBig[o].element)){
+      for (let i = tiros.length - 1; i >= 0; i--) {
+        for (let o = asteroidBig.length - 1; o >= 0; o--) {
+          if (asteroidBig[o] != undefined) {
+            if (parseInt(tiros[i].element.style.left) > (parseInt(asteroidBig[o].element.style.left))) {
+              if (parseInt(tiros[i].element.style.left) < (parseInt(asteroidBig[o].element.style.left) + 136)) {
+                if (parseInt(tiros[i].element.style.top) <= parseInt(asteroidBig[o].element.style.top) + 100 && parseInt(tiros[i].element.style.top) >= parseInt(asteroidBig[o].element.style.top)) {
+                  if (space.element.contains(tiros[i].element)) {
+                    if (space.element.contains(asteroidBig[o].element)) {
 
-                      destruido.push(new Destruido(x,o,asteroidBig));
+                      destruido.push(new Destruido(x, o, asteroidBig));
 
                       space.element.removeChild(tiros[i].element)
                       space.element.removeChild(asteroidBig[o].element)
 
-                      if (destruido[x] != undefined){
-                        if(space.element.contains(destruido[x].element)){
+                      if (destruido[x] != undefined) {
+                        if (space.element.contains(destruido[x].element)) {
                           Pontuacao = parseInt(Pontuacao) + 10
-                          ponto.element.innerHTML =  String(Pontuacao).padStart(6, '0');
-                          (function(x) {
-                            setTimeout(function() {      
-                              if (destruido[x] != undefined)  
-                                if(space.element.contains(destruido[x].element))     
+                          ponto.element.innerHTML = String(Pontuacao).padStart(6, '0');
+                          (function (x) {
+                            setTimeout(function () {
+                              if (destruido[x] != undefined)
+                                if (space.element.contains(destruido[x].element))
                                   space.element.removeChild(destruido[x].element)
                             }, 200);
                           })(x);
@@ -510,63 +621,63 @@
       }
 
       //Asteroid grande atingiu nave do jogador
-      for(let e = asteroidBig.length - 1 ; e >=0 ; e--){
+      for (let e = asteroidBig.length - 1; e >= 0; e--) {
         if (parseInt(asteroidBig[e].element.style.left) + 136 > parseInt(ship.element.style.left)) {
           if (parseInt(asteroidBig[e].element.style.left) < (parseInt(ship.element.style.left) + 98)) {
             if (parseInt(asteroidBig[e].element.style.top) == parseInt(ship.element.style.top)) {
-              if(space.element.contains(asteroidBig[e].element)){
-                if(space.element.contains(vidas[VidasLeft].element)){
+              if (space.element.contains(asteroidBig[e].element)) {
+                if (space.element.contains(vidas[VidasLeft].element)) {
                   console.log(VidasLeft)
                   space.element.removeChild(vidas[VidasLeft].element)
                 }
-                
+
                 VidasLeft -= 1
                 console.log("atingiu")
                 ship.element.src = "assets/playerDamaged.png";
                 console.log(asteroidBig[e])
-                destruido.push(new Destruido(x,e,asteroidBig));
-      
+                destruido.push(new Destruido(x, e, asteroidBig));
+
                 space.element.removeChild(asteroidBig[e].element)
-                
-                
+
+
                 //Imagem de nave destruida
                 if (destruido[x] != undefined) {
-                  if(space.element.contains(destruido[x].element)){
-                    (function(x) {
-                      setTimeout(function() {      
-                        if (destruido[x] != undefined)  
-                          if(space.element.contains(destruido[x].element))     
+                  if (space.element.contains(destruido[x].element)) {
+                    (function (x) {
+                      setTimeout(function () {
+                        if (destruido[x] != undefined)
+                          if (space.element.contains(destruido[x].element))
                             space.element.removeChild(destruido[x].element)
                       }, 200);
-                  })(x);
+                    })(x);
                   }
                 }
-                
+
                 // mudar a imagem para danificada e chamar set timeout com 5 segundos para mudar a imagem de volta para a normal 
-                (function(ship) {
-                  setTimeout(function() {      
+                (function (ship) {
+                  setTimeout(function () {
                     ship.element.src = "assets/player.png"
                   }, 5000);
                 })(ship);
-              
-      
+
+
                 if (VidasLeft == 0) {
                   Morreu = true
                   m = 0
                   console.log("Morreu")
                 }
-      
-                x+=1
+
+                x += 1
               }
             }
           }
         }
-      }      
-
+      }
+      
       // --------- ASTEROID PEQUENO ---------
 
       //surgimento de asteroid pequeno
-      const random_asteroidP = Math.random()  * 100;
+      const random_asteroidP = Math.random() * 100;
       if (random_asteroidP <= PROB_ASTEROID_SMALL) {
         asteroidSmall.push(new AsteroidP(y));
         y++
@@ -576,10 +687,10 @@
       asteroidSmall.forEach((e) => e.move(speed));
 
       //Removendo asteroid pequenos fora da tela 
-      for( let i = asteroidSmall.length - 1; i >= 0 ; i--){
-        if(asteroidSmall[i] != undefined){
-          if(parseInt(asteroidSmall[i].element.style.top) >= TAMY){
-            if(space.element.contains(asteroidSmall[i].element)){
+      for (let i = asteroidSmall.length - 1; i >= 0; i--) {
+        if (asteroidSmall[i] != undefined) {
+          if (parseInt(asteroidSmall[i].element.style.top) >= TAMY) {
+            if (space.element.contains(asteroidSmall[i].element)) {
               space.element.removeChild(asteroidSmall[i].element)
             }
           }
@@ -587,28 +698,28 @@
       }
 
       //Tiro encostrou em asteroid pequeno
-      for( let i = tiros.length - 1; i >= 0 ; i--){
-        for(let o = asteroidSmall.length -1 ; o >= 0 ; o--){
-          if(asteroidSmall[o]!= undefined){
-            if (parseInt(tiros[i].element.style.left) > (parseInt(asteroidSmall[o].element.style.left))){
-              if (parseInt(tiros[i].element.style.left) < (parseInt(asteroidSmall[o].element.style.left) + 44)){
-                if (parseInt(tiros[i].element.style.top) <= parseInt(asteroidSmall[o].element.style.top) + 39 && parseInt(tiros[i].element.style.top) >= parseInt(asteroidSmall[o].element.style.top) ){
-                  if(space.element.contains(tiros[i].element)){
-                    if(space.element.contains(asteroidSmall[o].element)){
-      
-                      destruido.push(new Destruido(x,o,asteroidSmall));
-      
+      for (let i = tiros.length - 1; i >= 0; i--) {
+        for (let o = asteroidSmall.length - 1; o >= 0; o--) {
+          if (asteroidSmall[o] != undefined) {
+            if (parseInt(tiros[i].element.style.left) > (parseInt(asteroidSmall[o].element.style.left))) {
+              if (parseInt(tiros[i].element.style.left) < (parseInt(asteroidSmall[o].element.style.left) + 44)) {
+                if (parseInt(tiros[i].element.style.top) <= parseInt(asteroidSmall[o].element.style.top) + 39 && parseInt(tiros[i].element.style.top) >= parseInt(asteroidSmall[o].element.style.top)) {
+                  if (space.element.contains(tiros[i].element)) {
+                    if (space.element.contains(asteroidSmall[o].element)) {
+
+                      destruido.push(new Destruido(x, o, asteroidSmall));
+
                       space.element.removeChild(tiros[i].element)
                       space.element.removeChild(asteroidSmall[o].element)
-      
-                      if (destruido[x] != undefined){
-                        if(space.element.contains(destruido[x].element)){
+
+                      if (destruido[x] != undefined) {
+                        if (space.element.contains(destruido[x].element)) {
                           Pontuacao = parseInt(Pontuacao) + 100
-                          ponto.element.innerHTML =  String(Pontuacao).padStart(6, '0');
-                          (function(x) {
-                            setTimeout(function() {      
-                              if (destruido[x] != undefined)  
-                                if(space.element.contains(destruido[x].element))     
+                          ponto.element.innerHTML = String(Pontuacao).padStart(6, '0');
+                          (function (x) {
+                            setTimeout(function () {
+                              if (destruido[x] != undefined)
+                                if (space.element.contains(destruido[x].element))
                                   space.element.removeChild(destruido[x].element)
                             }, 200);
                           })(x);
@@ -625,60 +736,60 @@
       }
 
       //Asteroid pequeno atingiu nave do jogador
-      for(let e = asteroidSmall.length - 1 ; e >=0 ; e--){
+      for (let e = asteroidSmall.length - 1; e >= 0; e--) {
         if (parseInt(asteroidSmall[e].element.style.left) + 44 > parseInt(ship.element.style.left)) {
           if (parseInt(asteroidSmall[e].element.style.left) < (parseInt(ship.element.style.left) + 98)) {
             if (parseInt(asteroidSmall[e].element.style.top) == parseInt(ship.element.style.top)) {
-              if(space.element.contains(asteroidSmall[e].element)){
-                
+              if (space.element.contains(asteroidSmall[e].element)) {
+
                 space.element.removeChild(vidas[VidasLeft].element)
                 VidasLeft -= 1
                 console.log("atingiu")
                 ship.element.src = "assets/playerDamaged.png";
                 console.log(asteroidSmall[e])
-                destruido.push(new Destruido(x,e,asteroidSmall));
-      
+                destruido.push(new Destruido(x, e, asteroidSmall));
+
                 space.element.removeChild(asteroidSmall[e].element)
-                
-                
+
+
                 //Imagem de nave destruida
                 if (destruido[x] != undefined) {
-                  if(space.element.contains(destruido[x].element)){
-                    (function(x) {
-                      setTimeout(function() {      
-                        if (destruido[x] != undefined)  
-                          if(space.element.contains(destruido[x].element))     
+                  if (space.element.contains(destruido[x].element)) {
+                    (function (x) {
+                      setTimeout(function () {
+                        if (destruido[x] != undefined)
+                          if (space.element.contains(destruido[x].element))
                             space.element.removeChild(destruido[x].element)
                       }, 200);
-                  })(x);
+                    })(x);
                   }
                 }
-                
+
                 // mudar a imagem para danificada e chamar set timeout com 5 segundos para mudar a imagem de volta para a normal 
-                (function(ship) {
-                  setTimeout(function() {      
+                (function (ship) {
+                  setTimeout(function () {
                     ship.element.src = "assets/player.png"
                   }, 5000);
                 })(ship);
-              
-      
+
+
                 if (VidasLeft == 0) {
                   Morreu = true
                   m = 0
                   console.log("Morreu")
                 }
-      
-                x+=1
+
+                x += 1
               }
             }
           }
         }
-      } 
+      }
 
-       // --------- DISCO VOADOR ---------
-      
-       //Surgimento de Disco voador 
-      const random_discoV = Math.random() *100;
+      // --------- DISCO VOADOR ---------
+
+      //Surgimento de Disco voador 
+      const random_discoV = Math.random() * 100;
       if (random_discoV <= PROB_DISCO_VOADOR) {
         discoVoador.push(new UFO(k));
         k++
@@ -688,39 +799,39 @@
       discoVoador.forEach((e) => e.move(speed));
 
       //Removendo disco voador fora da tela 
-      for( let i = discoVoador.length - 1; i >= 0 ; i--){
-        if(discoVoador[i] != undefined){
-          if(parseInt(discoVoador[i].element.style.top) >= TAMY){
-            if(space.element.contains(discoVoador[i].element)){
+      for (let i = discoVoador.length - 1; i >= 0; i--) {
+        if (discoVoador[i] != undefined) {
+          if (parseInt(discoVoador[i].element.style.top) >= TAMY) {
+            if (space.element.contains(discoVoador[i].element)) {
               space.element.removeChild(discoVoador[i].element)
             }
           }
         }
       }
-      
+
       //Tiro encostou em disco voador
-      for( let i = tiros.length - 1; i >= 0 ; i--){
-        for(let o = discoVoador.length -1 ; o >= 0 ; o--){
-          if(discoVoador[o]!= undefined){
-            if (parseInt(tiros[i].element.style.left) > (parseInt(discoVoador[o].element.style.left))){
-              if (parseInt(tiros[i].element.style.left) < (parseInt(discoVoador[o].element.style.left) + 91)){
-                if (parseInt(tiros[i].element.style.top) <= parseInt(discoVoador[o].element.style.top) + 39 && parseInt(tiros[i].element.style.top) >= parseInt(discoVoador[o].element.style.top) ){
-                  if(space.element.contains(tiros[i].element)){
-                    if(space.element.contains(discoVoador[o].element)){
-      
-                      destruido.push(new Destruido(x,o,discoVoador));
-      
+      for (let i = tiros.length - 1; i >= 0; i--) {
+        for (let o = discoVoador.length - 1; o >= 0; o--) {
+          if (discoVoador[o] != undefined) {
+            if (parseInt(tiros[i].element.style.left) > (parseInt(discoVoador[o].element.style.left))) {
+              if (parseInt(tiros[i].element.style.left) < (parseInt(discoVoador[o].element.style.left) + 91)) {
+                if (parseInt(tiros[i].element.style.top) <= parseInt(discoVoador[o].element.style.top) + 39 && parseInt(tiros[i].element.style.top) >= parseInt(discoVoador[o].element.style.top)) {
+                  if (space.element.contains(tiros[i].element)) {
+                    if (space.element.contains(discoVoador[o].element)) {
+
+                      destruido.push(new Destruido(x, o, discoVoador));
+
                       space.element.removeChild(tiros[i].element)
                       space.element.removeChild(discoVoador[o].element)
-      
-                      if (destruido[x] != undefined){
-                        if(space.element.contains(destruido[x].element)){
+
+                      if (destruido[x] != undefined) {
+                        if (space.element.contains(destruido[x].element)) {
                           Pontuacao = parseInt(Pontuacao) + 20
-                          ponto.element.innerHTML =  String(Pontuacao).padStart(6, '0');
-                          (function(x) {
-                            setTimeout(function() {      
-                              if (destruido[x] != undefined)  
-                                if(space.element.contains(destruido[x].element))     
+                          ponto.element.innerHTML = String(Pontuacao).padStart(6, '0');
+                          (function (x) {
+                            setTimeout(function () {
+                              if (destruido[x] != undefined)
+                                if (space.element.contains(destruido[x].element))
                                   space.element.removeChild(destruido[x].element)
                             }, 200);
                           })(x);
@@ -737,100 +848,109 @@
       }
 
       //Disco voador atingiu jogador
-      for(let e = discoVoador.length - 1 ; e >=0 ; e--){
+      for (let e = discoVoador.length - 1; e >= 0; e--) {
         if (parseInt(discoVoador[e].element.style.left) + 91 > parseInt(ship.element.style.left)) {
           if (parseInt(discoVoador[e].element.style.left) < (parseInt(ship.element.style.left) + 98)) {
             if (parseInt(discoVoador[e].element.style.top) == parseInt(ship.element.style.top)) {
-              if(space.element.contains(discoVoador[e].element)){
-                
+              if (space.element.contains(discoVoador[e].element)) {
+
                 space.element.removeChild(vidas[VidasLeft].element)
                 VidasLeft -= 1
                 console.log("atingiu")
                 ship.element.src = "assets/playerDamaged.png";
                 console.log(discoVoador[e])
-                destruido.push(new Destruido(x,e,discoVoador));
-      
+                destruido.push(new Destruido(x, e, discoVoador));
+
                 space.element.removeChild(discoVoador[e].element)
-                
-                
+
+
                 //Imagem de nave destruida
                 if (destruido[x] != undefined) {
-                  if(space.element.contains(destruido[x].element)){
-                    (function(x) {
-                      setTimeout(function() {      
-                        if (destruido[x] != undefined)  
-                          if(space.element.contains(destruido[x].element))     
+                  if (space.element.contains(destruido[x].element)) {
+                    (function (x) {
+                      setTimeout(function () {
+                        if (destruido[x] != undefined)
+                          if (space.element.contains(destruido[x].element))
                             space.element.removeChild(destruido[x].element)
                       }, 200);
-                  })(x);
+                    })(x);
                   }
                 }
-                
+
                 // mudar a imagem para danificada e chamar set timeout com 5 segundos para mudar a imagem de volta para a normal 
-                (function(ship) {
-                  setTimeout(function() {      
+                (function (ship) {
+                  setTimeout(function () {
                     ship.element.src = "assets/player.png"
                   }, 5000);
                 })(ship);
-              
-      
+
+
                 if (VidasLeft == 0) {
                   Morreu = true
                   m = 0
                   console.log("Morreu")
                 }
-      
-                x+=1
+
+                x += 1
               }
             }
           }
         }
-      } 
+      }
+      
     }
 
-    if(Morreu == true){
-      if(m == 0 ){
+    // Jogador morreu 
+    if (Morreu == true) {
+      telaMorte = true
+      if (m == 0) {
+        console.log(telaMorte)
         Pause = true
         m++
         let textoMorte = new TextoMorte()
         let botao = new Botao();
         let button = document.getElementById(botao.element.id)
-        button.onclick = function(){
-          
+        button.onclick = function () {
+
           space.element.removeChild(textoMorte.element)
           space.element.removeChild(botao.element)
 
           discoVoador.forEach((e) => {
-            if(space.element.contains(e.element)){
-            space.element.removeChild(e.element)
-            }}
+            if (space.element.contains(e.element)) {
+              space.element.removeChild(e.element)
+            }
+          }
           );
 
           asteroidSmall.forEach((e) => {
-            if(space.element.contains(e.element)){
-            space.element.removeChild(e.element)
-            }}
+            if (space.element.contains(e.element)) {
+              space.element.removeChild(e.element)
+            }
+          }
           );
 
           asteroidBig.forEach((e) => {
-            if(space.element.contains(e.element)){
-            space.element.removeChild(e.element)
-            }}
+            if (space.element.contains(e.element)) {
+              space.element.removeChild(e.element)
+            }
+          }
           );
 
           enemies.forEach((e) => {
-            if(space.element.contains(e.element)){
-            space.element.removeChild(e.element)
-            }}
+            if (space.element.contains(e.element)) {
+              space.element.removeChild(e.element)
+            }
+          }
           );
 
           tiros.forEach((e) => {
-            if(space.element.contains(e.element)){
-            space.element.removeChild(e.element)
-            }}
+            if (space.element.contains(e.element)) {
+              space.element.removeChild(e.element)
+            }
+          }
           );
           Pontuacao = 0
-          if(space.element.contains(ponto.element)){
+          if (space.element.contains(ponto.element)) {
             space.element.removeChild(ponto.element)
           }
 
@@ -841,20 +961,20 @@
 
         }
       }
-      
+
     }
-    console.log(VidasLeft)
+
   }
 
-  
-  if(Pause != true){
-    setInterval(()=>{
+  setInterval(() => {
+    if (Pause != true) {
+
       speed += 1
       console.log(speed)
-  
-    },60000)
-  }
-  
+    }
+  }, 30000)
+
+
   init();
 
 })();
