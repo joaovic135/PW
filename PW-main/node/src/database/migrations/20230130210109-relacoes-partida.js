@@ -3,12 +3,12 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.addConstraint('Users',{
+    await queryInterface.addConstraint('Partidas',{
       type: 'foreign key',
-      field: ['cursoId'],
-      name: 'user_curso_fk',
+      fields: ['userId'],
+      name: 'partida_user_fk',
       references:{
-        table: 'Cursos',
+        table: 'Users',
         field: 'id'
       },
       onDelete: 'restrict',
@@ -17,11 +17,9 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
+    await queryInterface.removeConstraint(
+      'Users',
+      'user_curso_fk'
+    )
   }
 };

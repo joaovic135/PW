@@ -2,9 +2,11 @@ const models = require("../models")
 const Curso = models.Curso;
 
 const index = async (req, res) => { 
-  let cursos = await Curso.findAll();
+  let cursos = await Curso.findAll({
+    include:models.Area
+  });
   cursos = cursos.map((curso) => curso.toJSON());
-
+  console.log(cursos)
   res.render("curso/index",{
     cursos
   });
@@ -12,15 +14,21 @@ const index = async (req, res) => {
 
 const create = async (req, res) => {
   if (req.route.methods.get) {
-    res.render("curso/create");
+    res.render("curso/create",{
+      csrf: req.crsfToken()
+    });
   } else {
     const curso = req.body;
     try{
+      console.log(req.body)
       await Curso.create(curso);
       res.redirect("/curso")
     }catch(e){
       res.render('curso/create',{
-        curso:req.body,
+        sigla:req.body.sigla,
+        nome: req.body.nome,
+        descricao:req.body.descricao,
+        areaId: req.body.areaId,
         errors: e
       })
     }
@@ -28,10 +36,10 @@ const create = async (req, res) => {
 }
 const read = async (req, res) => {
   const {id} = req.params;
-  console.log(id)
-  let curso = await Curso.findByPk(id);
+  let curso = await Curso.findByPk(id,{
+    include: models.Area
+  });
   curso = curso.toJSON()
-  console.log(curso)
   res.render("curso/read",{
     curso
   })
@@ -39,17 +47,24 @@ const read = async (req, res) => {
 
 
 const update = async (req, res) => { 
-  let curso = await Curso.findOne({where:{id:req.params.id}});
+  const {id} = req.params;
+  let curso = await Curso.findByPk(id,{
+    include: models.Area
+  });
   curso = curso.toJSON()
+
   if(req.route.methods.get){
     res.render("curso/update",{
       curso:curso
     })
   }else{
     try{
-      await Curso.update(curso , {where:{id:req.params.id}});
+      await Curso.update(req.body , {where:{id}});
+      console.log(curso)
+      console.log("atualizando")
       res.redirect("/curso/"+req.params.id);
     }catch(error){
+      console.log("reee")
       res.render("curso/update",{
         curso: curso,
         error:error

@@ -10,3 +10,13 @@ h2{
 .invalid-feedback{
   display: block;
 }
+.center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+}
+
+.size{
+  width: 900px;
+}

@@ -1,6 +1,8 @@
 import express from "express";
 const router = require("./src/router/routes");
 const handlebars = require('express-handlebars');
+const cookieParser = require('cookie-parser')
+const csurf = require('csurf');
 const sass = require('node-sass-middleware');
 const app = express();
 const PORT = 3000;
@@ -35,7 +37,19 @@ app.use("/js",[
   express.static(`${__dirname}/node_modules/@popperjs/core/dist/umd/`)
 ]);
 
+app.use(cookieParser());
 app.use(express.urlencoded({extended: false}));
+app.use(csurf({ cookie: true }));
+
+
+app.get("/teste-cookie",(req,res)=>{
+  if(!('nome' in req.cookies)){
+    res.cookie('nome','value');
+    res.send("Voce Nunca passou por aqui.")
+  }else{
+    res.send("Voce ja passou por aqui")
+  }
+})
 app.use(router);
  
 app.listen(PORT, () => {

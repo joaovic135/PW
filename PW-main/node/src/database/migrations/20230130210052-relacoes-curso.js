@@ -5,7 +5,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.addConstraint('Cursos',{
       type: 'foreign key',
-      field: ['areaId'],
+      fields: ['areaId'],
       name: 'curso_area_fk',
       references:{
         table: 'Areas',
@@ -14,16 +14,14 @@ module.exports = {
       onDelete: 'restrict',
       onUpdate: 'restrict'
     })
-
   },
 
+
   async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
+    await queryInterface.removeConstraint(
+      'Cursos',
+      'curso_area_fk'
+    )
     
   }
 };

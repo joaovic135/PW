@@ -1,9 +1,12 @@
 <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
-  <div class="card-header">Header</div>
+  <div class="card-header">{{curso.nome}}</div>
   <div class="card-body">
-    <h4 class="card-title">{{curso.nome}}</h4>
-    <p class="card-text">{{curso.descricao}}
-    </p>
-    <button href="curso/remove/:id" type="button" class="btn btn-danger">Deletar Curso</button>
+    <p class="card-text">Sigla: {{curso.sigla}}</p>
+    <p class="card-text">Nome: {{curso.nome}}</p>
+    <p class="card-text">Descrição: {{curso.descricao}}</p>
+    <p class="card-text">{{curso.Area.nome}}</p>
+    <a href="/curso/remove/{{curso.id}}" type="button" class="btn btn-danger">Deletar Curso</a>
+    <a href="/curso/update/{{curso.id}}" type="button" class="btn btn-light">Editar Curso</a>
+    
   </div>
 </div>
