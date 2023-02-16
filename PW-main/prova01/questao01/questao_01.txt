@@ -1,3 +1,6 @@
+Todos os erros foram encontrados corretamente.
+Nota 2.0
+
 linha 15 não contem a tag body
 linha 18 a tag <strong> é aberta e nunca fechada. 
 linha 24 - 33 é usado a tag <style> ao inves de <script>

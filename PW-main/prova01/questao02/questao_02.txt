@@ -1,3 +1,6 @@
+Seletores incorretos
+Nota: 0.0 
+
 id
 class 
 style

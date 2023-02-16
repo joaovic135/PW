@@ -1,3 +1,6 @@
+Conceito de hoisting errado. Código de exemplo incorreto.
+Nota: 0.5
+
 hoisting é uma utlidade da linguagem Java Script que tem como 
 função interpretar o codigo de forma diferente da que foi escrita. 
 exemplo 
