@@ -1,0 +1,66 @@
+<h1>Formulário de Criação de Curso</h1>
+
+<form action="/curso/create" method="post" id="formCurso" type="submit">
+  <div class="container">
+    <div class="col-8">
+      <div class="form-group">
+        <label for="sigla" class="form-label mt-4">Sigla do curso</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="sigla" 
+          name="sigla"
+          aria-describedby="siglaHelp"
+          placeholder="IE07"
+          value={{curso.sigla}}
+        >
+        <small id="siglaHelp" class="form-text text-muted">Por favor. Em caso de dúvida, acesse o site da UFAM</small>
+        <div class="invalid-feedback">{{showError errors 'sigla'}}</div>
+
+      </div>
+      <div class="form-group">
+        <label for="nome" class="form-label mt-4">Nome do curso</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="nome" 
+          name="nome"
+          aria-describedby="nomeHelp"
+          placeholder="Engenharia de Software"
+          value={{curso.nome}}
+        >
+        <div class="invalid-feedback">{{showError errors 'nome'}}</div>
+      </div>
+      <div class="form-group">
+        <label for="descricao" name="descricao" class="form-label mt-4">Descrição do Curso</label>
+        <textarea class="form-control"name="descricao" id="descricao" rows="3" ></textarea>
+      </div>
+      <fieldset class="form-group">
+        <legend class="mt-4">Radio buttons</legend>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="areaId" id="areaId1" value="1" {{checked curso.areaId 1}}>
+          <label class="form-check-label" for="areaId1">
+            Ciências Exatas
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="areaId" id="areaId2" value="2" {{checked curso.areaId 2}}>
+          <label class="form-check-label" for="areaId2">
+            Ciências Humanas
+          </label>
+        </div>
+        <div class="form-check disabled">
+          <input class="form-check-input" type="radio" name="areaId" id="areaId3" value="3" {{checked curso.areaId 3}}>
+          <label class="form-check-label" for="areaId3">
+            Ciências Biologicas
+          </label>
+        </div>
+        <input type="hidden" name="_csrf" value="{{csrf}}">
+      <button type="submit" id="formUpdateButton" class="btn btn-primary mt-4">Adicionar Curso</button>
+      </fieldset>  
+    </div>
+  </div>
+
+</form>
+
+

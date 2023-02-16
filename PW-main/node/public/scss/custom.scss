@@ -1,0 +1,22 @@
+$color: #ff0000;
+h2{
+  color: $color;
+}
+
+.main-body{
+  margin-top: 72px;
+}
+
+.invalid-feedback{
+  display: block;
+}
+.center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+}
+
+.size{
+  width: 900px;
+}
