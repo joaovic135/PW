@@ -23,7 +23,6 @@
 
   const PROB_ENEMY_SHIP = 0.3
   const PROB_ASTEROID_BIG = 0.2
-  const PROB_ENEMY_SHOT = 0.9
   const PROB_ASTEROID_SMALL = 0.3
   const PROB_DISCO_VOADOR = 0.1
 
@@ -35,7 +34,6 @@
   let asteroidBig = [];
   let enemies = [];
   let tiros = [];
-  let enemiesShot = [];
 
   let vidas = [3];
 
@@ -118,7 +116,7 @@
     }
 
     move() {
-      this.element.style.backgroundPositionY = `${parseInt(this.element.style.backgroundPositionY) + 1
+      this.element.style.backgroundPositionY = `${parseInt(this.element.style.backgroundPositionY) + 1 + (speed/2)
         }px`
     }
   }
@@ -225,20 +223,6 @@
     }
     move(speed) {
       this.element.style.top = `${parseInt(this.element.style.top) + 1 + speed}px`;
-    }
-  }
-
-  class EnemyShot {
-    constructor(e){
-      this.element = document.createElement("img");
-      this.element.className = "enemy-shot";
-      this.element.src = "assets/laserGreen.png";
-      this.element.style.top = `${parseInt(e.element.style.top) + 48}px`;
-      this.element.style.left = `${parseInt(e.element.style.left) + 48}px`;
-      space.element.appendChild(this.element);
-    }
-    move(speed) {
-      this.element.style.top = `${parseInt(this.element.style.top) + 2 + speed}px`;
     }
   }
 
@@ -360,93 +344,6 @@
       //Movimento da nave inimiga 
       enemies.forEach((e) => e.move(speed));
       
-      //Nave inimiga atirando
-      const random_enemy_shot = Math.random()*100;
-      for (let k = enemies.length - 1; k >= 0; k--) {
-        if (enemies[k] != undefined) {
-          if (space.element.contains(enemies[k].element)) {
-            if(random_enemy_shot <= PROB_ENEMY_SHOT){
-              enemiesShot.push(new EnemyShot(enemies[k]));
-              const interval2 = window.setInterval(function(){
-                if(Pause == false){
-                  console.log("tiro")
-                  enemiesShot.push(new EnemyShot(enemies[k]))
-                }
-              },8000)
-            } 
-          }
-        }
-      }
-      
-      //Movimento do tiro da nave inimiga 
-      enemiesShot.forEach((e) => e.move(speed));
-
-      //Removendo tiros inimigos fora da tela 
-      for(let i = enemiesShot.length - 1; i>= 0 ; i--){
-        if (enemiesShot[i] != undefined) {
-          if (parseInt(enemiesShot[i].element.style.top) >= TAMY) {
-            if (space.element.contains(enemiesShot[i].element)) {
-              space.element.removeChild(enemiesShot[i].element)
-            }
-          }
-        }
-      }
-
-      //Tiro inimigo encostou no jogador
-      for(let i = enemiesShot.length -1 ; i>=0; i--){
-        if(enemiesShot[i] != undefined){
-          if(parseInt(enemiesShot[i].element.style.left) > (parseInt(ship.element.style.left))){
-            if(parseInt(enemiesShot[i].element.style.left) < (parseInt(ship.element.style.left)+92)){
-
-              if(parseInt(enemiesShot[i].element.style.top) <= parseInt(ship.element.style.top) + 45 && parseInt(enemiesShot[i].element.style.top) >= parseInt(ship.element.style.top)){
-                if (space.element.contains(enemiesShot[i].element)){
-                  
-                  if (space.element.contains(vidas[VidasLeft].element)) {
-                    console.log(VidasLeft)
-                    space.element.removeChild(vidas[VidasLeft].element)
-                  }
-
-                  VidasLeft -= 1
-                  console.log("atingiu Tiro")
-                  ship.element.src = "assets/playerDamaged.png";
-                  console.log(enemiesShot[i])
-                  destruido.push(new Destruido(x, i, enemiesShot));
-
-                  space.element.removeChild(enemiesShot[i].element)
-                
-                  //Imagem de nave destruida
-                  if (destruido[x] != undefined) {
-                    if (space.element.contains(destruido[x].element)) {
-                      (function (x) {
-                        setTimeout(function () {
-                          if (destruido[x] != undefined)
-                            if (space.element.contains(destruido[x].element))
-                              space.element.removeChild(destruido[x].element)
-                        }, 200);
-                      })(x);
-                    }
-                  }
-                  // mudar a imagem para danificada e chamar set timeout com 5 segundos para mudar a imagem de volta para a normal 
-                  (function (ship) {
-                    setTimeout(function () {
-                      ship.element.src = "assets/player.png"
-                    }, 5000);
-                  })(ship);
-
-                  if (VidasLeft == 0) {
-                    Morreu = true
-                    m = 0
-                    console.log("Morreu")
-                  }
-
-                  x += 1
-                }
-              }
-            }
-          }
-        }
-      }
-
       // Removendo naves inimigas fora da tela
       for (let i = enemies.length - 1; i >= 0; i--) {
         if (enemies[i] != undefined) {

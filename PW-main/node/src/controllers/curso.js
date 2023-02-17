@@ -15,7 +15,7 @@ const index = async (req, res) => {
 const create = async (req, res) => {
   if (req.route.methods.get) {
     res.render("curso/create",{
-      csrf: req.crsfToken()
+      csrf: req.csrfToken()
     });
   } else {
     const curso = req.body;
@@ -25,6 +25,7 @@ const create = async (req, res) => {
       res.redirect("/curso")
     }catch(e){
       res.render('curso/create',{
+        csrf: req.csrfToken(),
         sigla:req.body.sigla,
         nome: req.body.nome,
         descricao:req.body.descricao,
@@ -55,7 +56,8 @@ const update = async (req, res) => {
 
   if(req.route.methods.get){
     res.render("curso/update",{
-      curso:curso
+      curso:curso,
+      csrf: req.csrfToken()
     })
   }else{
     try{
