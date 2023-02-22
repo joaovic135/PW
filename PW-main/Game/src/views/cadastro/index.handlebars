@@ -1,0 +1,70 @@
+<h1>Criar Conta</h1>
+<h2>Deseja criar uma conta? Basta preencher o formulario abaixo</h2>
+
+
+<form action="/cadastro" method="post" id="formCadastro" type="submit">
+    <div class="container">
+        <div class="col-8">
+            <div class="form-group">
+                <label for="nome" class="form-label mt-4">Nome Completo</label>
+                <input 
+                type="text" 
+                class="form-control" 
+                id="nome" 
+                name="nome"
+                placeholder="Nome Completo"
+                value={{nome}}
+                >
+            </div>
+        
+
+            <div class="form-group">
+                <label for="email" class="form-label mt-4">Endereço de E-mail</label>
+                <input 
+                    type="email" 
+                    class="form-control" 
+                    id="email"
+                    name="email" 
+                    aria-describedby="emailHelp" 
+                    placeholder="jorge@example.com"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="cursoId" class="form-label mt-4">Seu curso na UFAM</label>
+                <select class="form-select" id="cursoId" name="cursoId">
+                    {{#each curso}}
+                        <option value="{{id}}">{{nome}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="senha" class="form-label mt-4">Escolha sua senha de acesso</label>
+                <input 
+                    type="password" 
+                    class="form-control" 
+                    id="senha" 
+                    name="senha"
+                    placeholder="******"
+                >
+            </div>
+            <div class="form-group">
+                <label for="senhaC" class="form-label mt-4">Confirme sua senha</label>
+                <input 
+                    type="password" 
+                    class="form-control" 
+                    id="senhaC" 
+                    name="senhaC"
+                    placeholder="******"
+                >
+            <div class="invalid-feedback">{{checkSenha senha senhaC}}</div>
+            </div>
+            <div class="d-grid gap-2">
+                <input type="hidden" name="_csrf" value="{{csrf}}">
+                <button type="submit" id="formUpdateButton" class="btn btn-lg btn-primary mt-4">Criar conta</button>
+            </div>
+        </div>
+    </div>
+
+
+</form>

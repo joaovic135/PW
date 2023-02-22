@@ -1,0 +1,62 @@
+#space{
+    border: 1px solid black;
+    background-image: url("/assets/Background/51653afbbccaae1178acb0ded410dbef.jpg");
+    position: relative;
+    overflow: hidden;
+  }
+  
+  #ship{
+    position: absolute;
+  }
+  
+  .pontos{
+    position: absolute;
+    color: white;
+    font-size: 35px;
+    margin: 0;
+  }
+  
+  .enemy-shot{
+    position: absolute;
+  }
+  
+  .textoMorte{
+    position: absolute;
+    align-self: center;
+    color: red;
+    font-size: 40px;
+  }
+  
+  .botao{
+    position: absolute;
+    align-self: center;
+  }
+  
+  .enemy-ship{
+    position: absolute;
+  }
+  
+  
+  .ufo{
+    position: absolute;
+  }
+  
+  .asteroid-G{
+    position: absolute;
+  }
+  
+  .asteroid-P{
+    position: absolute;
+  }
+  
+  .life{
+    position: absolute;
+  }
+  
+  .shot{
+    position: absolute;
+  }
+  
+  .destroy{
+    position: absolute;
+  }
